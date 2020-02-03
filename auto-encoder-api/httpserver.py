@@ -22,15 +22,20 @@ def hello_world():
 
 
 @app.route(prefix+'/qsize')
-def getQueue():
+def getQsize():
     return jsonify({'code': 0, 'msg': "", 'data': {'queue_size': workqueue.qsize()}})
+
+
+@app.route(prefix+'/queue')
+def getQueue():
+    return jsonify({'code': 0, 'msg': "", 'queue': workqueue.getall()})
 
 
 @app.route(prefix+'/output')
 def getOutput():
-    tmp=outqueue.getall()
+    tmp = outqueue.getall()
     tmp.reverse()
-    return jsonify({'code': 0, 'msg': "", 'data': {'output': tmp}})
+    return jsonify({'code': 0, 'msg': "", 'output': tmp})
 
 
 @app.route(prefix+'/add')
@@ -46,7 +51,6 @@ def addTask():
             return jsonify({'code': 1, 'msg': "err:ass isnt ascii"})
     except Exception as e:
         traceback.print_exc()
-        
 
 
 @app.route(prefix+'/del')
@@ -54,8 +58,10 @@ def delTask():
     uid = request.args.get("uid")
     return jsonify(workqueue.delete(uid))
 
+
 def is_ascii(s):
     return all(ord(c) < 128 for c in s)
+
 
 if __name__ == '__main__':
     runhttp(queue.Queue(), queue.Queue())
