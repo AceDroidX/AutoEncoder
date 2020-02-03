@@ -28,7 +28,9 @@ def getQueue():
 
 @app.route(prefix+'/output')
 def getOutput():
-    return jsonify({'code': 0, 'msg': "", 'data': {'output': outqueue.getall()}})
+    tmp=outqueue.getall()
+    tmp.reverse()
+    return jsonify({'code': 0, 'msg': "", 'data': {'output': tmp}})
 
 
 @app.route(prefix+'/add')

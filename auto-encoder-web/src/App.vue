@@ -8,7 +8,7 @@
       <v-spacer></v-spacer>
 
       <v-btn href="https://github.com/AceDroidX/AutoEncoder" target="_blank" text>
-        <span class="mr-2">VIEW THIS PROJECT ON GITHUB</span>
+        <span class="mr-2">GITHUB</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
     </v-app-bar>

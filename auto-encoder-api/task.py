@@ -16,9 +16,9 @@ def runtask(workqueue, outqueue):
                 video, ass, video.replace('.mp4', f'-{uid}.mp4'))
             ret = subprocess.run(arg, encoding='utf-8', cwd=workingdir)
             if ret.returncode == 0:
-                outqueue.put({'code': 0, 'msg': "", 'data': {'uid': uid, 'video': video, 'ass': ass, 'msg': str(ret)}})
+                outqueue.put({'code': 0, 'msg': "", 'data': {'color':'success--text','uid': uid, 'video': video, 'ass': ass, 'msg': str(ret)}})
             else:
-                outqueue.put({'code': 1, 'msg': "err:process run fail", 'data': {'uid': uid, 'video': video, 'ass': ass, 'err': str(ret)}})
+                outqueue.put({'code': 1, 'msg': "err:process run fail", 'data': {'color':'error--text','uid': uid, 'video': video, 'ass': ass, 'err': str(ret)}})
             print(f'queue [{uid}] finish')
             print(f'remain {workqueue.qsize()}')
         time.sleep(0.01)
