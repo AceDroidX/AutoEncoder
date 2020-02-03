@@ -37,8 +37,11 @@ def addTask():
         uid = str(uuid.uuid4())
         video = request.args.get("video")
         ass = request.args.get("ass")
-        workqueue.put((uid, video, ass))
-        return jsonify({'code': 0, 'msg': "", 'data': {'uid': uid, 'video': video, 'ass': ass}})
+        if is_ascii(ass):
+            workqueue.put((uid, video, ass))
+            return jsonify({'code': 0, 'msg': "", 'data': {'uid': uid, 'video': video, 'ass': ass}})
+        else:
+            return jsonify({'code': 1, 'msg': "err:ass isnt ascii"})
     except Exception as e:
         traceback.print_exc()
         
@@ -49,6 +52,8 @@ def delTask():
     uid = request.args.get("uid")
     return jsonify(workqueue.delete(uid))
 
+def is_ascii(s):
+    return all(ord(c) < 128 for c in s)
 
 if __name__ == '__main__':
     runhttp(queue.Queue(), queue.Queue())
