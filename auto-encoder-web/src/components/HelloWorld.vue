@@ -67,7 +67,7 @@ export default {
     response: "请输入生肉和字幕文件名",
     btnState: false,
     output: [{ 'color': '', 'video': 'loading...' }],
-    queue: [{'data':{ 'video': 'loading...' }}]
+    queue: [{ 'data': { 'color': '', 'video': 'loading...' } }]
   }),
   methods: {
     addtask: function () {
@@ -117,18 +117,18 @@ export default {
           if (response['data']['code'] == 0) {
             var tmp = response['data']['output'];
             if (tmp.length == 0) {
-              this.output = [{'data':{ 'color': '', 'video': '没有已完成的压制任务' }}]
+              this.output = [{ 'data': { 'color': '', 'video': '没有已完成的压制任务' } }]
             } else {
               this.output = tmp
             }
           } else {
-            this.output = [{'data':{ 'color': '', 'video': '压制任务获取失败' }}]
+            this.output = [{ 'data': { 'color': '', 'video': '压制任务获取失败' } }]
             console.log(response);
           }
         })
         .catch(error => { // 请求失败处理
           console.log(error);
-          this.output = [{'data':{ 'color': '', 'video': error }}]
+          this.output = [{ 'data': { 'color': '', 'video': error } }]
         });
     }
   },

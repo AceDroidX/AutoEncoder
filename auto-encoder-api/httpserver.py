@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import uuid
 import queue
 import traceback
+import copy
 
 prefix = '/api'
 
@@ -33,7 +34,7 @@ def getQueue():
 
 @app.route(prefix+'/output')
 def getOutput():
-    tmp = outqueue.getall()
+    tmp = copy.deepcopy(outqueue.getall())
     tmp.reverse()
     return jsonify({'code': 0, 'msg': "", 'output': tmp})
 

@@ -3,7 +3,7 @@ import time
 import queue
 
 testarg = r'ffmpeg.exe -i "test.mp4" -vf "ass=test.ass" -c:v libx264 -x264-params "threads=32" -profile:v high -preset medium -crf 20 -c:a copy -ss 00:00:00 -vframes 1800 ".\test-output.mp4"'
-TemplateArg = r'ffmpeg.exe -y -i "{}" -vf "ass={}" -c:v libx264 -x264-params "threads=32" -profile:v high -preset medium -crf 20 -c:a copy -ss 00:00:00 -vframes 1800 "{}"'
+TemplateArg = r'ffmpeg.exe -y -i "{}" -vf "ass={}" -c:v libx264 -x264-params "threads=32" -profile:v high -preset medium -crf 20 -c:a copy "{}"'
 workingdir = r'C:\Users\Administrator\Desktop\web\dl'
 
 
