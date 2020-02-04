@@ -4,6 +4,7 @@
       <v-col cols="12">
         <v-card color="#ffffff" light>
           <v-card-title class="headline">1.输入生肉和字幕文件名</v-card-title>
+          <v-card-text class="text--primary">仅根目录的文件，包含后缀，字幕文件名不能有中文</v-card-text>
           <v-list-item two-line>
             <v-list-item-content>
               <v-text-field label="生肉文件名" hide-details="auto" v-model="video"></v-text-field>
@@ -13,6 +14,7 @@
           <v-card-text class="text--primary">{{response}}</v-card-text>
           <v-card-actions>
             <v-btn text @click="addtask" :disabled="btnState">OK</v-btn>
+            <v-btn text @click="refresh" :disabled="btnState">刷新任务列表</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -30,14 +32,11 @@
               </v-list-item>
             </v-list-item-group>
           </v-list>
-          <v-card-actions>
-            <v-btn text @click="getTask" :disabled="btnState">刷新</v-btn>
-          </v-card-actions>
         </v-card>
       </v-col>
       <v-col cols="12">
         <v-card color="#ffffff" light>
-          <v-card-title class="headline">3.待执行的任务列表</v-card-title>
+          <v-card-title class="headline">3.待执行的任务</v-card-title>
           <v-list>
             <v-list-item-group>
               <v-list-item v-for="(item, i) in queue" :key="i">
@@ -49,9 +48,6 @@
               </v-list-item>
             </v-list-item-group>
           </v-list>
-          <v-card-actions>
-            <v-btn text @click="getQueue" :disabled="btnState">刷新</v-btn>
-          </v-card-actions>
         </v-card>
       </v-col>
       <v-col cols="12">
@@ -68,9 +64,6 @@
               </v-list-item>
             </v-list-item-group>
           </v-list>
-          <v-card-actions>
-            <v-btn text @click="getOutput" :disabled="btnState">刷新</v-btn>
-          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
@@ -82,11 +75,12 @@ export default {
   data: () => ({
     video: "",
     ass: "",
-    response: "请输入生肉和字幕文件名",
+    response: "",
     task: [{ 'color': '', 'video': 'loading...' }],
     btnState: false,
     queue: [{ 'color': '', 'video': 'loading...' }],
     output: [{ 'data': { 'color': '', 'video': 'loading...' } }],
+    timer: ''
   }),
   methods: {
     addtask: function () {
@@ -96,11 +90,13 @@ export default {
           if (response['data']['code'] == 0) {
             this.response = `压制任务创建成功，任务id:${response['data']['data']['uid']}，视频:${response['data']['data']['video']}，字幕:${response['data']['data']['ass']}`;
             this.btnState = false
-            this.getOutput()
-            this.getQueue()
-            this.getTask()
+            this.refresh()
           } else {
-            this.response = '压制任务创建失败';
+            if (response['data']['code'] == 1) {
+              this.response = '压制任务创建失败:字幕文件名不能有中文';
+            } else {
+              this.response = '压制任务创建失败';
+            }
             console.log(response);
             this.btnState = false
           }
@@ -170,16 +166,22 @@ export default {
           console.log(error);
           this.output = [{ 'data': { 'color': '', 'video': error } }]
         });
+    },
+    refresh: function () {
+      this.getOutput()
+      this.getQueue()
+      this.getTask()
     }
   },
   mounted: function () {
     this.$nextTick(function () {
       // Code that will run only after the
       // entire view has been rendered
-      this.getOutput()
-      this.getQueue()
-      this.getTask()
+      this.timer = setInterval(this.refresh, 1000);
     })
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
   }
 };
 </script>
