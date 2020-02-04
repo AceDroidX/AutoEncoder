@@ -2,15 +2,16 @@ import threading
 
 
 class Queue:
-    def __init__(self,maxsize=0):
+    def __init__(self, maxsize=0):
         self.threadLock = threading.Lock()
-        self.maxsize=maxsize
+        self.maxsize = maxsize
         self.queuelist = []
+        self.lastget = []
 
     def put(self, obj):
         self.threadLock.acquire()
-        if self.maxsize!=0 and len(self.queuelist)>=self.maxsize:
-            self.queuelist.pop(0)    
+        if self.maxsize != 0 and len(self.queuelist) >= self.maxsize:
+            self.queuelist.pop(0)
         self.queuelist.append(obj)
         self.threadLock.release()
 
@@ -21,8 +22,12 @@ class Queue:
         self.threadLock.acquire()
         tmp = self.queuelist[0]
         self.queuelist.pop(0)
+        self.lastget = tmp
         self.threadLock.release()
         return tmp
+
+    def lastGet(self):
+        return self.lastget
 
     def delete(self, obj):
         self.threadLock.acquire()
@@ -49,7 +54,7 @@ class Queue:
         except Exception as e:
             self.threadLock.release()
             print(e)
-            return {'code': 1, 'msg': "err:unknow error", 'data': {'uid': uid,'err': e}}
+            return {'code': 1, 'msg': "err:unknow error", 'data': {'uid': uid, 'err': e}}
 
     def empty(self):
         self.threadLock.acquire()

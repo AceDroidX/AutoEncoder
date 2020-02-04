@@ -10,6 +10,7 @@
               <v-text-field label="字幕文件名" hide-details="auto" v-model="ass"></v-text-field>
             </v-list-item-content>
           </v-list-item>
+          <v-card-text class="text--primary">{{response}}</v-card-text>
           <v-card-actions>
             <v-btn text @click="addtask" :disabled="btnState">OK</v-btn>
           </v-card-actions>
@@ -17,18 +18,11 @@
       </v-col>
       <v-col cols="12">
         <v-card color="#ffffff" light>
-          <v-card-title class="headline">2.等待压制</v-card-title>
-          <v-card-text class="text--primary">{{response}}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12">
-        <v-card color="#ffffff" light>
-          <v-card-title class="headline">3.正在执行的任务</v-card-title>
+          <v-card-title class="headline">2.正在执行的任务</v-card-title>
           <v-list>
             <v-list-item-group>
-              <v-list-item v-for="(item, i) in queue" :key="i">
+              <v-list-item v-for="(item, i) in task" :key="i">
                 <v-list-item-content>
-                  <!-- <v-list-item-title v-html="taskstate(item)"></v-list-item-title> -->
                   <v-list-item-title v-text="item['video']"></v-list-item-title>
                   <v-list-item-subtitle class="text--primary" v-text="item['ass']"></v-list-item-subtitle>
                   <v-list-item-subtitle v-text="item['uid']"></v-list-item-subtitle>
@@ -36,6 +30,28 @@
               </v-list-item>
             </v-list-item-group>
           </v-list>
+          <v-card-actions>
+            <v-btn text @click="getTask" :disabled="btnState">刷新</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+      <v-col cols="12">
+        <v-card color="#ffffff" light>
+          <v-card-title class="headline">3.待执行的任务列表</v-card-title>
+          <v-list>
+            <v-list-item-group>
+              <v-list-item v-for="(item, i) in queue" :key="i">
+                <v-list-item-content>
+                  <v-list-item-title v-text="item['video']"></v-list-item-title>
+                  <v-list-item-subtitle class="text--primary" v-text="item['ass']"></v-list-item-subtitle>
+                  <v-list-item-subtitle v-text="item['uid']"></v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+          <v-card-actions>
+            <v-btn text @click="getQueue" :disabled="btnState">刷新</v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
       <v-col cols="12">
@@ -45,7 +61,6 @@
             <v-list-item-group>
               <v-list-item v-for="(item, i) in output" :key="i">
                 <v-list-item-content>
-                  <!-- <v-list-item-title v-html="taskstate(item)"></v-list-item-title> -->
                   <v-list-item-title :class="item['data']['color']" v-text="item['data']['video']"></v-list-item-title>
                   <v-list-item-subtitle class="text--primary" v-text="item['data']['ass']"></v-list-item-subtitle>
                   <v-list-item-subtitle v-text="item['data']['uid']"></v-list-item-subtitle>
@@ -53,6 +68,9 @@
               </v-list-item>
             </v-list-item-group>
           </v-list>
+          <v-card-actions>
+            <v-btn text @click="getOutput" :disabled="btnState">刷新</v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
@@ -65,9 +83,10 @@ export default {
     video: "",
     ass: "",
     response: "请输入生肉和字幕文件名",
+    task: [{ 'color': '', 'video': 'loading...' }],
     btnState: false,
-    output: [{ 'color': '', 'video': 'loading...' }],
-    queue: [{ 'data': { 'color': '', 'video': 'loading...' } }]
+    queue: [{ 'color': '', 'video': 'loading...' }],
+    output: [{ 'data': { 'color': '', 'video': 'loading...' } }],
   }),
   methods: {
     addtask: function () {
@@ -79,6 +98,7 @@ export default {
             this.btnState = false
             this.getOutput()
             this.getQueue()
+            this.getTask()
           } else {
             this.response = '压制任务创建失败';
             console.log(response);
@@ -91,18 +111,38 @@ export default {
           this.btnState = false
         });
     },
+    getTask: function () {
+      this.axios.get('https://enc.acedroidx.top:8888/api/task')
+        .then(response => {
+          if (response['data']['code'] == 0) {
+            var tmp = response['data']['task'];
+            if (tmp.length == 0) {
+              this.task = [{ 'video': '没有正在执行的任务' }]
+            } else {
+              this.task = tmp
+            }
+          } else {
+            this.task = [{ 'video': '正在执行的任务获取失败' }]
+            console.log(response);
+          }
+        })
+        .catch(error => { // 请求失败处理
+          console.log(error);
+          this.task = [{ 'video': error }]
+        });
+    },
     getQueue: function () {
       this.axios.get('https://enc.acedroidx.top:8888/api/queue')
         .then(response => {
           if (response['data']['code'] == 0) {
             var tmp = response['data']['queue'];
             if (tmp.length == 0) {
-              this.queue = [{ 'video': '没有正在执行的任务' }]
+              this.queue = [{ 'video': '没有待执行的任务' }]
             } else {
               this.queue = tmp
             }
           } else {
-            this.queue = [{ 'video': '正在执行的任务获取失败' }]
+            this.queue = [{ 'video': '待执行的任务获取失败' }]
             console.log(response);
           }
         })
@@ -138,6 +178,7 @@ export default {
       // entire view has been rendered
       this.getOutput()
       this.getQueue()
+      this.getTask()
     })
   }
 };

@@ -26,6 +26,9 @@ def hello_world():
 def getQsize():
     return jsonify({'code': 0, 'msg': "", 'data': {'queue_size': workqueue.qsize()}})
 
+@app.route(prefix+'/task')
+def getTask():
+    return jsonify({'code': 0, 'msg': "", 'task': workqueue.lastGet()})
 
 @app.route(prefix+'/queue')
 def getQueue():
