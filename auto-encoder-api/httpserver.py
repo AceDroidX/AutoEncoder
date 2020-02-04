@@ -28,7 +28,8 @@ def getQsize():
 
 @app.route(prefix+'/task')
 def getTask():
-    return jsonify({'code': 0, 'msg': "", 'task': workqueue.lastGet()})
+    uid, video, ass=workqueue.lastGet()
+    return jsonify({'code': 0, 'msg': "", 'task': {'uid': uid, 'video': video, 'ass': ass}})
 
 @app.route(prefix+'/queue')
 def getQueue():
