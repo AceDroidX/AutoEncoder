@@ -6,7 +6,6 @@ class Queue:
         self.threadLock = threading.Lock()
         self.maxsize = maxsize
         self.queuelist = []
-        self.lastget = []
 
     def put(self, obj):
         self.threadLock.acquire()
@@ -22,18 +21,14 @@ class Queue:
         self.threadLock.acquire()
         tmp = self.queuelist[0]
         self.queuelist.pop(0)
-        self.lastget = tmp
         self.threadLock.release()
         return tmp
-
-    def lastGet(self):
-        return self.lastget
 
     def delete(self, obj):
         self.threadLock.acquire()
         try:
             if type(obj) == int:
-                uid = self.queuelist[obj][0]
+                uid = self.queuelist[obj]['uid']
                 self.queuelist.pop(obj)
             elif type(obj) == tuple:
                 uid = obj[0]
@@ -41,7 +36,7 @@ class Queue:
                 self.queuelist.pop(index)
             elif type(obj) == str:
                 for i in range(len(self.queuelist)):
-                    if self.queuelist[i][0] == obj:
+                    if self.queuelist[i]['uid'] == obj:
                         self.queuelist.pop(i)
                         self.threadLock.release()
                         uid = obj

@@ -10,8 +10,9 @@ app = Flask('httpserver')
 app.config['JSON_AS_ASCII'] = False
 
 
-def runhttp(w, d):
-    global workqueue, outqueue
+def runhttp(t, w, d):
+    global taskqueue, workqueue, outqueue
+    taskqueue = t
     workqueue = w
     outqueue = d
     app.run(host='0.0.0.0', port=8081)
@@ -26,10 +27,11 @@ def hello_world():
 def getQsize():
     return jsonify({'code': 0, 'msg': "", 'data': {'queue_size': workqueue.qsize()}})
 
+
 @app.route(prefix+'/task')
 def getTask():
-    uid, video, ass=workqueue.lastGet()
-    return jsonify({'code': 0, 'msg': "", 'task': {'uid': uid, 'video': video, 'ass': ass}})
+    return jsonify({'code': 0, 'msg': "", 'task': taskqueue.getall()})
+
 
 @app.route(prefix+'/queue')
 def getQueue():
@@ -50,7 +52,7 @@ def addTask():
         video = request.args.get("video")
         ass = request.args.get("ass")
         if is_ascii(ass):
-            workqueue.put((uid, video, ass))
+            workqueue.put({'uid': uid, 'video': video, 'ass': ass})
             return jsonify({'code': 0, 'msg': "", 'data': {'uid': uid, 'video': video, 'ass': ass}})
         else:
             return jsonify({'code': 1, 'msg': "err:ass isnt ascii"})
