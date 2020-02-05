@@ -1,5 +1,6 @@
 # AutoEncoder
 一个部署在服务器上的自动压制系统
+![示例图片](https://github.com/AceDroidX/AutoEncoder/raw/master/web.png)
 ## Why?
 作为Vtuber字幕组的一员，总会遇到没有压制man、视频压坏或是~~电脑太菜~~导致压制时间过长的问题  
 这个项目就是为了解决以上问题而产生的！~~当然你得有一台性能不错的服务器才行~~
